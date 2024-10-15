@@ -9,6 +9,9 @@ public class InputController : MonoBehaviour
 
     public Vector2 Move => _move;
 
+    private bool _jump;
+    public bool Jump => _jump;
+
     //same
     public Vector2 GetMove()
     {
@@ -19,8 +22,13 @@ public class InputController : MonoBehaviour
         _move=input.Get<Vector2>();
     }
 
-    private void Update()
+    private void OnJump()
     {
-        Debug.Log(Move);
+        _jump = true;
+    }
+
+    private void LateUpdate()
+    {
+        _jump = false;
     }
 }
