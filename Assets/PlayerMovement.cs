@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public float Speed=1;
 
     public float JumpSpeed=10;
-    public float AirControl=0.1;
+    public float AirControl;
 
     private Vector3 _lastVelocity;
 
