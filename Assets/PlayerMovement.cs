@@ -7,9 +7,12 @@ public class PlayerMovement : MonoBehaviour
 {
     CharacterController _characterController;
     InputController _input;
+    GroundChecker _groundChecker;
+
     public float Speed=1;
 
     public float JumpSpeed=10;
+    public float AirControl=0.1;
 
     private Vector3 _lastVelocity;
 
@@ -17,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _input = GetComponent<InputController>();
+        _groundChecker = GetComponentInChildren<GroundChecker>();
     }
 
     void Update()
@@ -33,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool ShouldJump()
     {
-        return _input.Jump; 
+        return _input.Jump && _groundChecker.Grounded; 
     }
 
     private void Move()
@@ -41,15 +45,19 @@ public class PlayerMovement : MonoBehaviour
         Vector3 direction = new Vector3(_input.Move.x, 0, _input.Move.y);
         //_characterController.SimpleMove(direction * Speed);
         Vector3 velocity = new Vector3();
-        velocity.x = direction.x * Speed ;
+
+        float smoothFactor = _groundChecker.Grounded? 1 : AirControl * Time.deltaTime;
+
+        velocity.x = Mathf.Lerp(_lastVelocity.x,direction.x * Speed, smoothFactor) ;
         velocity.y = _lastVelocity.y;
-        velocity.z = direction.z * Speed;        
+        velocity.z = Mathf.Lerp(_lastVelocity.z,direction.z * Speed, smoothFactor);        
 
         velocity.y = GetGravity();
         if (ShouldJump())
             Jump(ref velocity);
 
-        _characterController.Move(velocity * Time.deltaTime);
+        
+            _characterController.Move(velocity * Time.deltaTime);
 
         //Turn
         if (direction.magnitude > 0)
