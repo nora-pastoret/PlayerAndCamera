@@ -12,7 +12,9 @@ public class PlayerMovement : MonoBehaviour
     public float Speed=1;
 
     public float JumpSpeed=10;
-    public float AirControl;
+    public float AirControl=0.1f;
+
+    public float TurnSpeed = 1;
 
     private Vector3 _lastVelocity;
 
@@ -42,7 +44,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        Vector3 direction = new Vector3(_input.Move.x, 0, _input.Move.y);
+        var localInput = transform.right * _input.Move.x + transform.forward * _input.Move.y;
+        Vector3 direction = new Vector3(localInput.x, 0, localInput.z);
         //_characterController.SimpleMove(direction * Speed);
         Vector3 velocity = new Vector3();
 
@@ -63,7 +66,9 @@ public class PlayerMovement : MonoBehaviour
         if (direction.magnitude > 0)
         {
             Vector3 target = transform.position + direction;
-            transform.LookAt(target);
+            Vector3 current = transform.position + transform.forward;
+            Vector3 look = Vector3.Lerp(current, target, TurnSpeed * Time.deltaTime);
+            transform.LookAt(look);
         }
         _lastVelocity = velocity;
     }
